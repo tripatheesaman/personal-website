@@ -6,10 +6,10 @@ import { useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
 
 const Contact = () => {
-  const [name, setName] = useState();
-  const [email, setEmail] = useState();
-  const [message, setMessage] = useState();
-  // const [success, setSuccess] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [success, setSuccess] = useState(null);
   const form = useRef();
 
   const sendEmail = (e) => {
@@ -24,23 +24,43 @@ const Contact = () => {
       )
       .then(
         () => {
+          setName("");
           setEmail("");
           setMessage("");
-          setName("");
-          // setSuccess(true);
+          setSuccess(true);
+          setTimeout(() => {
+            setSuccess(null);
+          }, 5000);
         },
         (error) => {
           console.log(error.text);
-          // setSuccess(false);
+          setSuccess(false);
+          setTimeout(() => {
+            setSuccess(null);
+          }, 5000);
         }
       );
   };
-  // let successClass = success ? "block" : "hidden";
-  // const successClass = false;
-  // let content;
+  let errMsg;
+  if (success == null) errMsg = "";
+  else
+    errMsg = success ? (
+      <span
+        className={`bg-green-600 max-w-fit text-white border-transparent border-1 rounded-lg p-4`}
+      >
+        Message successfully sent!
+      </span>
+    ) : (
+      <span
+        className={`bg-red-600 max-w-fit text-white border-transparent border-1 rounded-lg p-4`}
+      >
+        Error Occured! Please try again later.
+      </span>
+    );
 
   return (
     <div className="md:px-10 px-7 my-10 bg-black p-10 rounded-lg" id="contact">
+      {errMsg}
       <div className="flex flex-col md:flex-row">
         {/* text and icons */}
         <div className="md:w-1/2">
@@ -78,7 +98,7 @@ const Contact = () => {
           <form onSubmit={sendEmail} ref={form}>
             <input
               type="text"
-              autoComplete="false"
+              autoComplete="off"
               value={name}
               onChange={(e) => setName(e.target.value)}
               name="user_name"
@@ -87,6 +107,7 @@ const Contact = () => {
             />
             <input
               type="email"
+              autoComplete="off"
               name="user_email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -95,7 +116,7 @@ const Contact = () => {
             />
             <textarea
               name="message"
-              autoComplete="false"
+              autoComplete="off"
               id="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
